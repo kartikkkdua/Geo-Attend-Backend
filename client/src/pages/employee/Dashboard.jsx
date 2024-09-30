@@ -12,6 +12,7 @@ function Attendance() {
   const { logout, user, baseurl } = useAuth();
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const [referenceDescriptor, setReferenceDescriptor] = useState(null);
 
   useEffect(() => {
     loadModels().then(startVideo);
@@ -22,6 +23,13 @@ function Attendance() {
     await faceapi.nets.ssdMobilenetv1.loadFromUri(uri);
     await faceapi.nets.faceLandmark68Net.loadFromUri(uri);
     await faceapi.nets.faceRecognitionNet.loadFromUri(uri);
+
+    // Load reference image and extract face descriptor
+    const img = await faceapi.fetchImage(`${baseurl}/uploads/${user.username}.jpg`);
+    const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+    if (detections) {
+      setReferenceDescriptor(detections.descriptor);
+    }
   };
 
   const startVideo = () => {
@@ -36,28 +44,29 @@ function Attendance() {
 
   const handleFaceDetection = async () => {
     if (videoRef.current && canvasRef.current) {
-      // Get video dimensions
       const videoWidth = videoRef.current.videoWidth;
       const videoHeight = videoRef.current.videoHeight;
 
-      // Set canvas dimensions to match video
       canvasRef.current.width = videoWidth;
       canvasRef.current.height = videoHeight;
 
-      // Detect faces
       const detections = await faceapi.detectAllFaces(videoRef.current, new faceapi.SsdMobilenetv1Options())
         .withFaceLandmarks()
         .withFaceDescriptors();
 
       const resizedDetections = faceapi.resizeResults(detections, { width: videoWidth, height: videoHeight });
 
-      // Clear previous drawings and draw the new detections
       const canvas = canvasRef.current.getContext('2d');
       canvas.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
 
-      if (detections.length > 0) {
-        markAttendance();
+      if (detections.length > 0 && referenceDescriptor) {
+        const faceMatcher = new faceapi.FaceMatcher(referenceDescriptor);
+        const matchedFace = faceMatcher.findBestMatch(detections[0].descriptor);
+
+        if (matchedFace.label !== 'unknown') {
+          markAttendance();
+        }
       }
     }
   };
@@ -74,6 +83,7 @@ function Attendance() {
             longitude,
             checkinTime: new Date().toLocaleTimeString() // Update checkin time dynamically
           };
+          console.log(data);
 
           try {
             const response = await axios.post(`${baseurl}/mark-attendance`, data);
@@ -103,7 +113,7 @@ function Attendance() {
     const intervalId = setInterval(handleFaceDetection, 1000); // Check for face detection every second
 
     return () => clearInterval(intervalId); // Cleanup interval on unmount
-  }, []);
+  }, [referenceDescriptor]);
 
   return (
     <>
