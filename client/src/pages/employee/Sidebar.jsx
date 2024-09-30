@@ -23,7 +23,7 @@ const Sidebar = ({ WrappedComponent }) => {
     return (
 
         <div style={{ display: 'flex' }}>
-            <div className='fixed h-[60px] flex justify-between top-0 w-full text-white bg-black py-3 px-5 shadow-lg'>
+            <div className='fixed h-[60px] z-50 flex justify-between top-0 w-full text-white bg-black py-3 px-5 shadow-lg'>
                 <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
                     <MenuIcon />
                 </IconButton>

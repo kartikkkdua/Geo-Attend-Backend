@@ -14,14 +14,15 @@ export const useAuth = () => {
     return useContext(AuthContext);
 }
 export const AuthProvider = ({ children }) => {
-    // const baseurl = "http://localhost:3000";
-    const baseurl = "https://geo-attend-backend.vercel.app";
+    const baseurl = "http://localhost:3000";
+    // const baseurl = "https://geo-attend-backend.vercel.app";
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const checkAuth = async () => {
         try {
             const response = await axios.get(`${baseurl}`, { withCredentials: true });
+            console.log(response.data.username)
             setUser(response.data.user);
             console.log(user);
             <Navigate to={`/${response.data.role}`} />

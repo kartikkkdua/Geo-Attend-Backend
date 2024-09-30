@@ -83,7 +83,8 @@ export default function Signup() {
                             </p>
                         </div>
                     </div>
-                </div></div>
+                </div>
+                <img className='w-[730px] absolute right-0 h-screen' src="https://www.replicon.com/wp-assets/uploads/2023/06/ERP-planning-concept-thumbnail.png" alt="" /></div>
         </div>
     );
 }

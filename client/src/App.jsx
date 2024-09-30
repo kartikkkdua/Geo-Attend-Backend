@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom
 import { AuthProvider, useAuth } from './AuthContext';
 import { Toaster } from 'react-hot-toast';
 import ProtectRoute from './auth/ProtectedRoute'
-import Sidebar from './pages/employee/Sidebar';
+import Sidebar1 from './pages/employee/Sidebar';
+import Sidebar2 from './pages/admin/Sidebar';
 export default function App() {
   const Home = React.lazy(() => import('./pages/Home'));
   const AdminBoard = React.lazy(() => import('./pages/admin/Dashboard'));
@@ -19,10 +20,10 @@ export default function App() {
               <Route path='/' element={<Home />} />
             </Route>
             <Route element={<ProtectRoute requiredRole="Admin" />}>
-              <Route path='/Admin' element={<AdminBoard />} />
+              <Route path='/Admin' element={<Sidebar2 WrappedComponent={<AdminBoard/>} ></Sidebar2>} />
             </Route>
             <Route element={<ProtectRoute requiredRole="Employee" />}>
-              <Route path='/Employee' element={<Sidebar WrappedComponent={<UserBoard/>} ></Sidebar>} />
+              <Route path='/Employee' element={<Sidebar1 WrappedComponent={<UserBoard/>} ></Sidebar1>} />
             </Route>
           </Routes>
         </Suspense>
