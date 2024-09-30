@@ -1,22 +1,25 @@
-// src/App.js
-import React, { useState } from 'react';
-import FaceApi from './face-api';
+import logo from './logo.svg';
+import './App.css';
 
-const App = () => {
-  const [capturedFace, setCapturedFace] = useState(null);
-
-  const handleFaceCaptured = (descriptor) => {
-    console.log("Captured Face Descriptor:", descriptor);
-    setCapturedFace(descriptor);
-  };
-
+function App() {
   return (
-    <div>
-      <h1>Face Capture App</h1>
-      <FaceApi onFaceCaptured={handleFaceCaptured} />
-      {capturedFace && <p>Face captured successfully!</p>}
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
     </div>
   );
-};
+}
 
 export default App;
