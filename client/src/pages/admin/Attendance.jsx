@@ -24,17 +24,18 @@ const AttendanceView = () => {
         }
 
         const parseTime = (timeString) => {
-            // Check if the timeString is defined and has the expected format
-            if (typeof timeString !== 'string' || !/^\d{1,2}:\d{2}:\d{2} (AM|PM)$/.test(timeString)) {
+            const regex = /(\d{1,2}):(\d{2}):(\d{2}) (AM|PM)/; // Regex to match time format
+            const match = timeString.match(regex); // Match the time string
+
+            if (!match) {
                 console.error(`Invalid time format: ${timeString}`);
                 return new Date(NaN); // Return NaN date for invalid format
             }
 
-            const parts = timeString.trim().split(' '); // Split time and AM/PM
-            const time = parts[0].split(':'); // Split into components (hh:mm:ss)
-            
-            let [hours, minutes, seconds] = time.map(Number); // Convert to numbers
-            const modifier = parts[1]; // Get AM/PM part
+            let [_, hours, minutes, seconds, modifier] = match;
+            hours = parseInt(hours, 10);
+            minutes = parseInt(minutes, 10);
+            seconds = parseInt(seconds, 10);
 
             if (modifier === 'PM' && hours !== 12) {
                 hours += 12; // Convert to 24-hour format
@@ -44,9 +45,7 @@ const AttendanceView = () => {
             }
 
             // Create a Date object with a dummy date
-            const dateObj = new Date(`1970-01-01T${hours}:${minutes}:${seconds}`);
-            console.log(`Parsed time: ${timeString} -> ${dateObj}`);
-            return dateObj;
+            return new Date(1970, 0, 1, hours, minutes, seconds); // Year, Month (0-based), Date, Hours, Minutes, Seconds
         };
 
         console.log(`Checkin: ${checkin}, Checkout: ${checkout}`); // Log the input values
